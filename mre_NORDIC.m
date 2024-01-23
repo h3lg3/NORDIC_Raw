@@ -1,9 +1,20 @@
 function  [IMG2, ARG] = mre_NORDIC(II,ARG)
+% fMRI
+%  fn_magn_in='name.nii.gz';
+%  fn_phase_in='name2.nii.gz';
+%  fn_out=['NORDIC_' fn_magn_in(1:end-7)];
+%  ARG.temporal_phase=1;
+%  ARG.phase_filter_width=10;
+%  NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
+%
 % dMRI
-%  cube_in ='name.nii.gz';
+%  fn_magn_in='name.nii.gz';
+%  fn_phase_in='name2.nii.gz';
+%  fn_out=['NORDIC_' fn_magn_in(1:end-7)];
 %  ARG.temporal_phase=3;
 %  ARG.phase_filter_width=3;
-%  cube_out = mre_NORDIC(cube_in,ARG)
+%  NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
+%
 %
 %  file_input assumes 4D data
 %
@@ -25,9 +36,12 @@ function  [IMG2, ARG] = mre_NORDIC(II,ARG)
 %   ARG.kernel_size_gfactor val = [val1 val2 val], defautl is [14 14 1]
 %   ARG.kernel_size_PCA     val = [val1 val2 val], default is val1=val2=val3;
 %                                                  ratio of 11:1 between spatial and temproal voxels
+%   ARG.magnitude_only      val =[] or 1.  Using complex or magntiude only. Default is []
+%                                          Function still needs two inputs but will ignore the second
 %
 %   ARG.save_add_info       val =[0 1];  If it is 1, then an additonal matlab file is being saved with degress removed etc.
 %                                         default is 0
+%   ARG.make_complex_nii    if the field exist, then the phase is being saved in a similar format as the input phase
 %
 %   ARG.phase_slice_average_for_kspace_centering     val = [0 1]
 %                                         if val =0, not used, if val=1 the series average pr slice is first removed
@@ -136,8 +150,10 @@ if ~isfield(ARG,'data_has_zero_elements') %
     ARG.data_has_zero_elements=0; %  % If there are pixels that are constant zero
 end
 
+if ~isfield(ARG,'patch_average') %
+    ARG.patch_average=0; % patch averaging 
+end
 
-ARG;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 KSP2=II;
@@ -238,7 +254,6 @@ else
 end
 
 QQ.KSP_processed=zeros(1,size(KSP2,1)-ARG.kernel_size(1));
-ARG.patch_average=0;
 ARG.patch_average_sub= ARG.gfactor_patch_overlap;
 
 ARG.LLR_scale=0;
@@ -298,7 +313,7 @@ if ARG.MP==2;
     gfactor=ones(size(gfactor));
 end
 
-% gfactor=ones(size(gfactor));
+ % gfactor=ones(size(gfactor));
 
 
 if ( ARG.save_gfactor_map==2 )  | ( ARG.save_gfactor_map==1 )
@@ -418,7 +433,7 @@ end
 
 
 QQ.KSP_processed=zeros(1,size(KSP2,1)-ARG.kernel_size(1));
-ARG.patch_average=0;
+ARG.patch_average=1;
 ARG.patch_average_sub= ARG.NORDIC_patch_overlap ;
 % ARG.kernel_size=[7 7 7]; ARG.patch_average_sub=7;  MPPCA
 % ARG.soft_thrs=10;  % MPPCa   (When Noise varies)
@@ -584,7 +599,7 @@ if     QQ.KSP_processed(1,n1)~=1  && QQ.KSP_processed(1,n1)~=3 % not being proce
 
             if    ARG.patch_average==1
                 %  [DATA_full2, ~,NOISE, Component_threshold] =subfunction_loop_for_NVR_avg(KSP2a,ARG.kernel_size(3),ARG.kernel_size(2),ARG.kernel_size(1),lambda,1,ARG.soft_thrs);
-                [DATA_full2, KSP2_weight] =subfunction_loop_for_NVR_avg(KSP2a,ARG.kernel_size(3),ARG.kernel_size(2),ARG.kernel_size(1),lambda,1,ARG.soft_thrs,KSP2_weight);
+                [DATA_full2, KSP2_weight] =subfunction_loop_for_NVR_avg(KSP2a,ARG.kernel_size(3),ARG.kernel_size(2),ARG.kernel_size(1),lambda,1,ARG.soft_thrs,KSP2_weight, ARG);
             else
 
                 KSP2_weight_tmp         =KSP2_weight([1:ARG.kernel_size(1)]+(n1-1),:,:,:);
