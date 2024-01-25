@@ -1,9 +1,20 @@
 function  [IMG2, ARG] = mre_NORDIC(II,ARG)
+% fMRI
+%  fn_magn_in='name.nii.gz';
+%  fn_phase_in='name2.nii.gz';
+%  fn_out=['NORDIC_' fn_magn_in(1:end-7)];
+%  ARG.temporal_phase=1;
+%  ARG.phase_filter_width=10;
+%  NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
+%
 % dMRI
-%  cube_in ='name.nii.gz';
+%  fn_magn_in='name.nii.gz';
+%  fn_phase_in='name2.nii.gz';
+%  fn_out=['NORDIC_' fn_magn_in(1:end-7)];
 %  ARG.temporal_phase=3;
 %  ARG.phase_filter_width=3;
-%  cube_out = mre_NORDIC(cube_in,ARG)
+%  NIFTI_NORDIC(fn_magn_in,fn_phase_in,fn_out,ARG)
+%
 %
 %  file_input assumes 4D data
 %
