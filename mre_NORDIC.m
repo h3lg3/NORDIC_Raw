@@ -379,8 +379,9 @@ if ARG.noise_volume_last>0
 
     tmp_noise(isnan(tmp_noise))=0;
     tmp_noise(isinf(tmp_noise))=0;
-    ARG.measured_noise=std(tmp_noise(tmp_noise~=0));  % sqrt(2) for real and complex
-else
+    % ARG.measured_noise=std(tmp_noise(tmp_noise~=0));  % sqrt(2) for real and complex
+    ARG.measured_noise=mean(tmp_noise(tmp_noise~=0)); % HH, use mean if noise is calculated outside from repetitions
+else 
     ARG.measured_noise=1;  % IF COMPLEX DATA
 end
 
